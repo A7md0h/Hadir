@@ -8,19 +8,6 @@ const firebaseConfig = {
     appId: "1:531964326507:web:eae0e02d06941ad1f0372e"
 };
 
-// اختبار كتابة بيانات إلى Firestore
-db.collection('test').add({
-    testField: 'Hello, Firestore!',
-    timestamp: new Date()
-})
-.then((docRef) => {
-    console.log('تم كتابة البيانات بنجاح إلى Firestore! معرف الوثيقة:', docRef.id);
-})
-.catch((error) => {
-    console.error('حدث خطأ أثناء كتابة البيانات إلى Firestore:', error);
-});
-
-
 // تهيئة Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
@@ -72,7 +59,7 @@ gradeSelect.addEventListener('change', () => {
     }
 
     // جلب جميع الشعب من Firestore بناءً على الصف المختار
-    db.collection('classes').where(firebase.firestore.FieldPath.documentId(), '>=', gradeName).where(firebase.firestore.FieldPath.documentId(), '<=', gradeName + '\uf8ff').get()
+    db.collection('classes').get()
         .then((querySnapshot) => {
             let classCount = 0; // عداد للتحقق من وجود الشعب
             querySnapshot.forEach((doc) => {
