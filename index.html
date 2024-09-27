@@ -85,51 +85,6 @@
     </footer>
 
     <!-- تحميل كود جافاسكريبت بعد تحميل الصفحة بالكامل -->
-    <script>
-        // تهيئة Firebase - تأكد من استخدام التهيئة الصحيحة هنا
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
-
-        // تهيئة Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        // كود اختبار الاتصال
-        function testFirestoreConnection() {
-            // إنشاء مرجع لمجموعة اختبار
-            const testCollection = db.collection("testCollection");
-
-            // محاولة كتابة مستند اختبار
-            testCollection.doc("testDoc").set({
-                testField: "Hello, Firestore!"
-            })
-            .then(() => {
-                console.log("تمت كتابة البيانات بنجاح.");
-                
-                // محاولة قراءة البيانات من المستند الذي تم إنشاؤه
-                return testCollection.doc("testDoc").get();
-            })
-            .then((doc) => {
-                if (doc.exists) {
-                    console.log("تمت قراءة البيانات بنجاح:", doc.data());
-                } else {
-                    console.log("المستند غير موجود.");
-                }
-            })
-            .catch((error) => {
-                console.error("حدث خطأ أثناء الاتصال بقاعدة البيانات:", error);
-            });
-        }
-
-        // استدعاء دالة اختبار الاتصال
-        testFirestoreConnection();
-    </script>
     <script src="script.js"></script>
 </body>
 </html>
