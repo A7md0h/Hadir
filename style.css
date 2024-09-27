@@ -67,12 +67,13 @@ body {
     border: 1px solid #ddd; /* حدود خفيفة */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* ظل خفيف */
     outline: none;
-    transition: border 0.3s ease;
+    transition: border 0.3s ease, box-shadow 0.3s ease; /* إضافة تأثير تفاعل */
     margin-top: 5px;
 }
 
 .selector-group select:focus {
     border-color: #1e3c72; /* تغيير لون الحدود عند التركيز */
+    box-shadow: 0 0 8px rgba(30, 60, 114, 0.4); /* ظل مميز عند التركيز */
 }
 
 /* تنسيق الجدول */
@@ -113,11 +114,15 @@ table td {
     font-size: 18px;
     border-radius: 5px; /* زوايا مستديرة */
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.1s ease; /* إضافة تأثير التفاعل */
 }
 
 .btn-save:hover {
     background-color: #45a049;
+}
+
+.btn-save:active {
+    transform: scale(0.98); /* تأثير الضغط عند النقر */
 }
 
 /* تنسيق الفوتر */
