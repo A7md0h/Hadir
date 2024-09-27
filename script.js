@@ -35,19 +35,19 @@ gradeSelect.addEventListener('change', () => {
     // تحديد الشعب بناءً على الصف المختار
     let classes = [];
     switch (selectedGrade) {
-        case '5':
+        case 'الصف الخامس':
             classes = ['خامس 1', 'خامس 2', 'خامس 3', 'خامس 4'];
             break;
-        case '6':
+        case 'الصف السادس':
             classes = ['سادس 1', 'سادس 2', 'سادس 3', 'سادس 4', 'سادس 5'];
             break;
-        case '7':
+        case 'الصف السابع':
             classes = ['سابع 1', 'سابع 2', 'سابع 3', 'سابع 4', 'سابع 5'];
             break;
-        case '8':
+        case 'الصف الثامن':
             classes = ['ثامن 1', 'ثامن 2', 'ثامن 3', 'ثامن 4'];
             break;
-        case '9':
+        case '9الصف التاسع':
             classes = ['تاسع 1', 'تاسع 2', 'تاسع 3', 'تاسع 4'];
             break;
         default:
