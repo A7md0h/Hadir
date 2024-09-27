@@ -87,41 +87,4 @@ classSelect.addEventListener('change', () => {
 });
 
 // حفظ الحضور والغياب
-saveAttendanceButton.addEventListener('click', () => {
-    const selectedGrade = gradeSelect.value;
-    const selectedClass = classSelect.value;
-    const selectedPeriod = periodSelect.value;
-
-    if (!selectedGrade || !selectedClass || !selectedPeriod) {
-        showAlert('يرجى اختيار الصف والشعبة والحصة.');
-        return;
-    }
-
-    const rows = studentsTableBody.querySelectorAll('tr');
-    const attendanceData = [];
-
-    rows.forEach((row, index) => {
-        const studentName = row.querySelector('td').textContent;
-        const attendance = row.querySelector(`input[name="attendance-${index}"]:checked`);
-        if (attendance) {
-            attendanceData.push({
-                name: studentName,
-                attendance: attendance.value
-            });
-        }
-    });
-
-    // رفع البيانات إلى Firestore
-    db.collection("attendance").add({
-        grade: selectedGrade,
-        class: selectedClass,
-        period: selectedPeriod,
-        students: attendanceData,
-        timestamp: new Date()
-    }).then(() => {
-        showAlert('تم حفظ الحضور بنجاح!');
-    }).catch((error) => {
-        console.error("حدث خطأ أثناء حفظ البيانات:", error);
-        showAlert('تعذر حفظ الحضور، تحقق من الاتصال بـ Firestore.');
-    });
-});
+save
