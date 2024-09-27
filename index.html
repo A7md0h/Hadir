@@ -4,26 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تسجيل الحضور والغياب</title>
-    <!-- تحميل مكتبات Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
-    <!-- تحميل ملف CSS -->
     <link rel="stylesheet" href="style.css">
-    <!-- خط جوجل (Cairo) لتحسين الخط العربي -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600&display=swap">
+    <link rel="stylesheet" href="attendance-styles.css">
 </head>
 <body>
-    <!-- رأس الصفحة: شعار المدرسة واسم المدرسة -->
     <header class="header">
         <img src="logo.png" alt="شعار المديرية" class="school-logo">
         <h1>مدرسة أبو القاسم للتعليم الأساسي</h1>
     </header>
 
-    <!-- حاوية الحضور -->
     <div class="attendance-container">
         <h2>تسجيل الحضور والغياب</h2>
 
-        <!-- اختيار الصف -->
+        <!-- قائمة اختيار الصف -->
         <div class="selector-group">
             <label for="grade-select">اختر الصف:</label>
             <select id="grade-select">
@@ -36,15 +29,15 @@
             </select>
         </div>
 
-        <!-- اختيار الشعبة -->
+        <!-- قائمة اختيار الشعبة -->
         <div class="selector-group">
             <label for="class-select">اختر الشعبة:</label>
-            <select id="class-select" disabled>
+            <select id="class-select">
                 <option value="">-- اختر الشعبة --</option>
             </select>
         </div>
 
-        <!-- اختيار الحصة -->
+        <!-- قائمة اختيار الحصة -->
         <div class="selector-group">
             <label for="period-select">اختر الحصة:</label>
             <select id="period-select">
@@ -76,17 +69,15 @@
             </table>
         </div>
 
-        <button id="save-attendance" class="btn-save">حفظ الحضور</button>
+        <button id="save-attendance" class="btn-save" disabled>حفظ الحضور</button>
     </div>
 
-    <!-- تصميم الأستاذ أحمد الضامري -->
     <footer>
         <p>تصميم الأستاذ أحمد الضامري</p>
     </footer>
 
-    <!-- بيانات الطلاب والصفوف -->
     <script>
-        // بيانات الطلاب والشعب بشكل مدمج
+        // بيانات الطلاب والشعب مدمجة في الكود
         const studentsData = {
             '5/1': ['أحمد بن علي', 'محمد بن سالم', 'سعيد بن خالد'],
             '5/2': ['علي بن أحمد', 'خالد بن حسن', 'ياسر بن حمد'],
@@ -111,9 +102,105 @@
             '9/3': ['علي بن خالد', 'سعيد بن ماجد', 'محمد بن علي'],
             '9/4': ['خالد بن سالم', 'حسن بن عبدالله', 'ماجد بن سعيد']
         };
-    </script>
 
-    <!-- تحميل ملف JavaScript بعد تحميل الصفحة بالكامل -->
-    <script src="script.js"></script>
+        // الحصول على العناصر
+        const gradeSelect = document.getElementById('grade-select');
+        const classSelect = document.getElementById('class-select');
+        const periodSelect = document.getElementById('period-select');
+        const studentsTableBody = document.getElementById('students-table').querySelector('tbody');
+        const saveAttendanceButton = document.getElementById('save-attendance');
+
+        // عند تغيير الصف، تحديث الشُعب
+        gradeSelect.addEventListener('change', function() {
+            const selectedGrade = gradeSelect.value;
+            classSelect.innerHTML = '<option value="">-- اختر الشعبة --</option>';
+            studentsTableBody.innerHTML = ''; // مسح الجدول
+            saveAttendanceButton.disabled = true; // تعطيل زر الحفظ حتى يتم اختيار شعبة
+
+            if (selectedGrade) {
+                const classKeys = Object.keys(studentsData).filter(classKey => classKey.startsWith(selectedGrade + '/'));
+                
+                if (classKeys.length > 0) {
+                    classKeys.forEach(classKey => {
+                        const option = document.createElement('option');
+                        option.value = classKey;
+                        option.textContent = classKey;
+                        classSelect.appendChild(option);
+                    });
+                    classSelect.disabled = false; // تفعيل اختيار الشعبة
+                } else {
+                    alert('لا توجد شعب متاحة لهذا الصف.');
+                }
+            } else {
+                classSelect.disabled = true; // تعطيل اختيار الشعبة إذا لم يتم اختيار الصف
+            }
+        });
+
+        // عند تغيير الشعبة، عرض أسماء الطلاب
+        classSelect.addEventListener('change', function() {
+            const selectedClass = classSelect.value;
+            studentsTableBody.innerHTML = ''; // مسح الجدول
+
+            if (selectedClass && studentsData[selectedClass]) {
+                studentsData[selectedClass].forEach((student, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${student}</td>
+                        <td><input type="radio" name="attendance-${index}" value="حضور"></td>
+                        <td><input type="radio" name="attendance-${index}" value="غياب"></td>
+                    `;
+                    studentsTableBody.appendChild(row);
+                });
+                saveAttendanceButton.disabled = false; // تفعيل زر الحفظ عند وجود طلاب
+            } else {
+                studentsTableBody.innerHTML = '<tr><td colspan="3">لا توجد بيانات للطلاب في هذه الشعبة.</td></tr>';
+                saveAttendanceButton.disabled = true; // تعطيل زر الحفظ إذا لم توجد بيانات للطلاب
+            }
+        });
+
+        // حفظ بيانات الحضور في Firebase
+        saveAttendanceButton.addEventListener('click', function() {
+            const selectedGrade = gradeSelect.value;
+            const selectedClass = classSelect.value;
+            const selectedPeriod = periodSelect.value;
+
+            if (!selectedGrade || !selectedClass || !selectedPeriod) {
+                alert('يرجى اختيار الصف والشعبة والحصة.');
+                return;
+            }
+
+            const attendanceData = [];
+            const rows = studentsTableBody.querySelectorAll('tr');
+
+            rows.forEach((row, index) => {
+                const studentName = row.querySelector('td').textContent;
+                const attendance = row.querySelector(`input[name="attendance-${index}"]:checked`);
+                if (attendance) {
+                    attendanceData.push({
+                        name: studentName,
+                        attendance: attendance.value
+                    });
+                }
+            });
+
+            if (attendanceData.length === 0) {
+                alert('يرجى تحديد حضور أو غياب للطلاب.');
+                return;
+            }
+
+            db.collection("attendance").add({
+                grade: selectedGrade,
+                class: selectedClass,
+                period: selectedPeriod,
+                students: attendanceData,
+                timestamp: new Date()
+            }).then(() => {
+                alert('تم حفظ الحضور بنجاح!');
+            }).catch((error) => {
+                console.error("حدث خطأ أثناء حفظ البيانات:", error);
+                alert('تعذر حفظ الحضور، تحقق من الاتصال بـ Firebase.');
+            });
+        });
+    </script>
 </body>
 </html>
