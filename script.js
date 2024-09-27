@@ -9,13 +9,7 @@ const firebaseConfig = {
 };
 
 // تهيئة Firebase
-try {
-    firebase.initializeApp(firebaseConfig);
-    console.log("Firebase تم تهيئته بنجاح.");
-} catch (error) {
-    console.error("حدث خطأ أثناء تهيئة Firebase:", error);
-}
-
+firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 // الحصول على عناصر HTML
@@ -37,30 +31,40 @@ gradeSelect.addEventListener('change', () => {
     if (!selectedGrade) {
         classSelect.disabled = true;
         classSelect.innerHTML = '<option value="">-- اختر الشعبة --</option>';
+        console.log("لم يتم اختيار صف بعد.");
         return;
     }
 
     // إفراغ القائمة وإعادة تهيئتها
-    classSelect.disabled = false;
+    classSelect.disabled = false; // تفعيل اختيار الشعبة
     classSelect.innerHTML = '<option value="">-- اختر الشعبة --</option>';
     console.log(`تم اختيار الصف: ${selectedGrade}`);
 
     // جلب جميع الشعب من Firestore
     db.collection('classes').get().then((querySnapshot) => {
+        let classCount = 0; // عداد للتحقق من وجود الشعب
         querySnapshot.forEach((doc) => {
             const className = doc.id;
-            console.log(`تم جلب الشعبة: ${className}`);
             // التحقق من أن الشعبة تتبع الصف المحدد
             if (className.startsWith(selectedGrade)) {
+                classCount++;
                 const option = document.createElement('option');
                 option.value = className;
                 option.textContent = className;
                 classSelect.appendChild(option);
+                console.log(`تمت إضافة الشعبة: ${className}`);
             }
         });
+        // إذا لم يتم العثور على شعب، يجب تعطيل القائمة
+        if (classCount === 0) {
+            classSelect.disabled = true;
+            console.log("لا توجد شعب لهذا الصف.");
+            showAlert('لا توجد شعب متاحة لهذا الصف.');
+        }
     }).catch((error) => {
         console.error("حدث خطأ أثناء جلب الشعب:", error);
         showAlert('حدث خطأ أثناء جلب الشعب. تحقق من الاتصال.');
+        classSelect.disabled = true; // تعطيل القائمة في حالة حدوث خطأ
     });
 });
 
@@ -69,6 +73,7 @@ classSelect.addEventListener('change', () => {
     const selectedClass = classSelect.value;
     if (!selectedClass) {
         studentsTableBody.innerHTML = '';
+        console.log("لم يتم اختيار شعبة بعد.");
         return;
     }
 
