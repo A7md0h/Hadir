@@ -23,18 +23,24 @@ gradeSelect.addEventListener('change', function() {
     const selectedGrade = gradeSelect.value;
     classSelect.innerHTML = '<option value="">-- اختر الشعبة --</option>';
     studentsTableBody.innerHTML = ''; // مسح الجدول
+    saveAttendanceButton.disabled = true; // تعطيل زر الحفظ حتى يتم اختيار شعبة
 
     if (selectedGrade) {
-        classSelect.disabled = false;
-        const classKeys = Object.keys(studentsData).filter(classKey => classKey.startsWith(selectedGrade));
-        classKeys.forEach(classKey => {
-            const option = document.createElement('option');
-            option.value = classKey;
-            option.textContent = classKey;
-            classSelect.appendChild(option);
-        });
+        const classKeys = Object.keys(studentsData).filter(classKey => classKey.startsWith(selectedGrade + '/'));
+        
+        if (classKeys.length > 0) {
+            classKeys.forEach(classKey => {
+                const option = document.createElement('option');
+                option.value = classKey;
+                option.textContent = classKey;
+                classSelect.appendChild(option);
+            });
+            classSelect.disabled = false; // تفعيل اختيار الشعبة
+        } else {
+            alert('لا توجد شعب متاحة لهذا الصف.');
+        }
     } else {
-        classSelect.disabled = true;
+        classSelect.disabled = true; // تعطيل اختيار الشعبة إذا لم يتم اختيار الصف
     }
 });
 
@@ -53,6 +59,10 @@ classSelect.addEventListener('change', function() {
             `;
             studentsTableBody.appendChild(row);
         });
+        saveAttendanceButton.disabled = false; // تفعيل زر الحفظ عند وجود طلاب
+    } else {
+        studentsTableBody.innerHTML = '<tr><td colspan="3">لا توجد بيانات للطلاب في هذه الشعبة.</td></tr>';
+        saveAttendanceButton.disabled = true; // تعطيل زر الحفظ إذا لم توجد بيانات للطلاب
     }
 });
 
