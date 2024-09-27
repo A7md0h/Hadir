@@ -6,13 +6,14 @@
     <title>تسجيل الحضور والغياب</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="attendance-styles.css">
+    
     <!-- تحميل مكتبات Firebase -->
     <script type="module">
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-        // Your web app's Firebase configuration
+        // إعدادات Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyBDwsgFvH_iffHcEb4RktjQXJi-s3cD830",
             authDomain: "hadir-fe761.firebaseapp.com",
@@ -24,7 +25,11 @@
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        const db = getFirestore(app); // تهيئة Firestore
+
+        // سجلات للتأكد من التهيئة
+        console.log("Firebase Initialized", app);
+        console.log("Firestore Initialized", db);
     </script>
 </head>
 <body>
@@ -207,6 +212,14 @@
                 alert('يرجى تحديد حضور أو غياب للطلاب.');
                 return;
             }
+
+            // إضافة سجلات لتحديد البيانات قبل الحفظ
+            console.log("محاولة حفظ البيانات:", {
+                grade: selectedGrade,
+                class: selectedClass,
+                period: selectedPeriod,
+                students: attendanceData
+            });
 
             try {
                 await addDoc(collection(db, "attendance"), {
