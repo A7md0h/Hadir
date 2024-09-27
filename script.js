@@ -9,7 +9,13 @@ const firebaseConfig = {
 };
 
 // تهيئة Firebase
-firebase.initializeApp(firebaseConfig);
+try {
+    firebase.initializeApp(firebaseConfig);
+    console.log("Firebase تم تهيئته بنجاح.");
+} catch (error) {
+    console.error("حدث خطأ أثناء تهيئة Firebase:", error);
+}
+
 const db = firebase.firestore();
 
 // الحصول على عناصر HTML
@@ -18,6 +24,12 @@ const classSelect = document.getElementById('class-select');
 const periodSelect = document.getElementById('period-select');
 const studentsTableBody = document.getElementById('students-table').querySelector('tbody');
 const saveAttendanceButton = document.getElementById('save-attendance');
+
+// عرض رسالة تحذير في حالة حدوث خطأ
+function showAlert(message) {
+    alert(message);
+    console.error(message);
+}
 
 // تفعيل اختيار الشعبة بناءً على الصف المحدد
 gradeSelect.addEventListener('change', () => {
@@ -31,11 +43,13 @@ gradeSelect.addEventListener('change', () => {
     // إفراغ القائمة وإعادة تهيئتها
     classSelect.disabled = false;
     classSelect.innerHTML = '<option value="">-- اختر الشعبة --</option>';
+    console.log(`تم اختيار الصف: ${selectedGrade}`);
 
     // جلب جميع الشعب من Firestore
     db.collection('classes').get().then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
             const className = doc.id;
+            console.log(`تم جلب الشعبة: ${className}`);
             // التحقق من أن الشعبة تتبع الصف المحدد
             if (className.startsWith(selectedGrade)) {
                 const option = document.createElement('option');
@@ -46,7 +60,7 @@ gradeSelect.addEventListener('change', () => {
         });
     }).catch((error) => {
         console.error("حدث خطأ أثناء جلب الشعب:", error);
-        alert('حدث خطأ أثناء جلب الشعب. تحقق من الاتصال.');
+        showAlert('حدث خطأ أثناء جلب الشعب. تحقق من الاتصال.');
     });
 });
 
@@ -58,10 +72,13 @@ classSelect.addEventListener('change', () => {
         return;
     }
 
+    console.log(`تم اختيار الشعبة: ${selectedClass}`);
+
     // جلب أسماء الطلاب من Firestore
     db.collection('classes').doc(selectedClass).get().then((doc) => {
         if (doc.exists) {
             const students = doc.data().students;
+            console.log(`تم جلب بيانات الطلاب: ${students}`);
             studentsTableBody.innerHTML = '';
             students.forEach((student, index) => {
                 const row = document.createElement('tr');
@@ -73,11 +90,12 @@ classSelect.addEventListener('change', () => {
                 studentsTableBody.appendChild(row);
             });
         } else {
+            console.log("لا توجد بيانات للطلاب في هذه الشعبة.");
             studentsTableBody.innerHTML = '<tr><td colspan="3">لا توجد بيانات للطلاب في هذه الشعبة.</td></tr>';
         }
     }).catch((error) => {
-        console.error("حدث خطأ أثناء جلب البيانات:", error);
-        alert('حدث خطأ أثناء جلب بيانات الطلاب. تحقق من الاتصال.');
+        console.error("حدث خطأ أثناء جلب بيانات الطلاب:", error);
+        showAlert('حدث خطأ أثناء جلب بيانات الطلاب. تحقق من الاتصال.');
     });
 });
 
@@ -88,9 +106,11 @@ saveAttendanceButton.addEventListener('click', () => {
     const selectedPeriod = periodSelect.value;
 
     if (!selectedGrade || !selectedClass || !selectedPeriod) {
-        alert('يرجى اختيار الصف والشعبة والحصة.');
+        showAlert('يرجى اختيار الصف والشعبة والحصة.');
         return;
     }
+
+    console.log(`حفظ الحضور للصف: ${selectedGrade}، الشعبة: ${selectedClass}، الحصة: ${selectedPeriod}`);
 
     const rows = studentsTableBody.querySelectorAll('tr');
     const attendanceData = [];
@@ -114,9 +134,9 @@ saveAttendanceButton.addEventListener('click', () => {
         students: attendanceData,
         timestamp: new Date()
     }).then(() => {
-        alert('تم حفظ الحضور بنجاح!');
+        showAlert('تم حفظ الحضور بنجاح!');
     }).catch((error) => {
         console.error("حدث خطأ أثناء حفظ البيانات:", error);
-        alert('تعذر حفظ الحضور، تحقق من الاتصال بـ Firestore.');
+        showAlert('تعذر حفظ الحضور، تحقق من الاتصال بـ Firestore.');
     });
 });
