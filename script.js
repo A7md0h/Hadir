@@ -19,11 +19,6 @@ const periodSelect = document.getElementById('period-select');
 const studentsTableBody = document.getElementById('students-table').querySelector('tbody');
 const saveAttendanceButton = document.getElementById('save-attendance');
 
-// عرض رسالة تحذير في حالة حدوث خطأ
-function showAlert(message) {
-    alert(message);
-}
-
 // تفعيل اختيار الشعبة بناءً على الصف المحدد
 gradeSelect.addEventListener('change', () => {
     const selectedGrade = gradeSelect.value;
@@ -51,7 +46,7 @@ gradeSelect.addEventListener('change', () => {
         });
     }).catch((error) => {
         console.error("حدث خطأ أثناء جلب الشعب:", error);
-        showAlert('حدث خطأ أثناء جلب الشعب. تحقق من الاتصال.');
+        alert('حدث خطأ أثناء جلب الشعب. تحقق من الاتصال.');
     });
 });
 
@@ -82,9 +77,46 @@ classSelect.addEventListener('change', () => {
         }
     }).catch((error) => {
         console.error("حدث خطأ أثناء جلب البيانات:", error);
-        showAlert('حدث خطأ أثناء جلب بيانات الطلاب. تحقق من الاتصال.');
+        alert('حدث خطأ أثناء جلب بيانات الطلاب. تحقق من الاتصال.');
     });
 });
 
 // حفظ الحضور والغياب
-save
+saveAttendanceButton.addEventListener('click', () => {
+    const selectedGrade = gradeSelect.value;
+    const selectedClass = classSelect.value;
+    const selectedPeriod = periodSelect.value;
+
+    if (!selectedGrade || !selectedClass || !selectedPeriod) {
+        alert('يرجى اختيار الصف والشعبة والحصة.');
+        return;
+    }
+
+    const rows = studentsTableBody.querySelectorAll('tr');
+    const attendanceData = [];
+
+    rows.forEach((row, index) => {
+        const studentName = row.querySelector('td').textContent;
+        const attendance = row.querySelector(`input[name="attendance-${index}"]:checked`);
+        if (attendance) {
+            attendanceData.push({
+                name: studentName,
+                attendance: attendance.value
+            });
+        }
+    });
+
+    // رفع البيانات إلى Firestore
+    db.collection("attendance").add({
+        grade: selectedGrade,
+        class: selectedClass,
+        period: selectedPeriod,
+        students: attendanceData,
+        timestamp: new Date()
+    }).then(() => {
+        alert('تم حفظ الحضور بنجاح!');
+    }).catch((error) => {
+        console.error("حدث خطأ أثناء حفظ البيانات:", error);
+        alert('تعذر حفظ الحضور، تحقق من الاتصال بـ Firestore.');
+    });
+});
