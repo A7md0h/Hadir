@@ -25,65 +25,77 @@ function showAlert(message) {
     console.error(message);
 }
 
+// تحويل الصف إلى الصيغة المطابقة في قاعدة البيانات
+function getGradeName(selectedGrade) {
+    switch(selectedGrade) {
+        case '5': return 'خامس';
+        case '6': return 'سادس';
+        case '7': return 'سابع';
+        case '8': return 'ثامن';
+        case '9': return 'تاسع';
+        default: return '';
+    }
+}
+
 // تفعيل اختيار الشعبة بناءً على الصف المحدد
 gradeSelect.addEventListener('change', () => {
     const selectedGrade = gradeSelect.value;
+    classSelect.disabled = true; // تعطيل اختيار الشعبة حتى يتم تحديد الصف
+    classSelect.innerHTML = '<option value="">-- اختر الشعبة --</option>';
+    studentsTableBody.innerHTML = ''; // تفريغ جدول الطلاب
+
     if (!selectedGrade) {
-        classSelect.disabled = true;
-        classSelect.innerHTML = '<option value="">-- اختر الشعبة --</option>';
         console.log("لم يتم اختيار صف بعد.");
         return;
     }
 
-    // إفراغ القائمة وإعادة تهيئتها
-    classSelect.disabled = false; // تفعيل اختيار الشعبة
-    classSelect.innerHTML = '<option value="">-- اختر الشعبة --</option>';
     console.log(`تم اختيار الصف: ${selectedGrade}`);
 
     // تحويل الصف إلى الصيغة المطابقة في قاعدة البيانات
-    let gradeName = '';
-    switch(selectedGrade) {
-        case '5': gradeName = 'خامس'; break;
-        case '6': gradeName = 'سادس'; break;
-        case '7': gradeName = 'سابع'; break;
-        case '8': gradeName = 'ثامن'; break;
-        case '9': gradeName = 'تاسع'; break;
-        default: gradeName = ''; break;
+    const gradeName = getGradeName(selectedGrade);
+    if (!gradeName) {
+        console.log("لم يتم التعرف على الصف المختار.");
+        return;
     }
 
     // جلب جميع الشعب من Firestore بناءً على الصف المختار
-    db.collection('classes').get().then((querySnapshot) => {
-        let classCount = 0; // عداد للتحقق من وجود الشعب
-        querySnapshot.forEach((doc) => {
-            const className = doc.id;
-            // التحقق من أن الشعبة تتطابق مع الصف المختار
-            if (className.startsWith(gradeName)) {
-                classCount++;
-                const option = document.createElement('option');
-                option.value = className;
-                option.textContent = className;
-                classSelect.appendChild(option);
-                console.log(`تمت إضافة الشعبة: ${className}`);
+    db.collection('classes').where(firebase.firestore.FieldPath.documentId(), '>=', gradeName).where(firebase.firestore.FieldPath.documentId(), '<=', gradeName + '\uf8ff').get()
+        .then((querySnapshot) => {
+            let classCount = 0; // عداد للتحقق من وجود الشعب
+            querySnapshot.forEach((doc) => {
+                const className = doc.id;
+                // التحقق من أن الشعبة تتطابق مع الصف المختار
+                if (className.startsWith(gradeName)) {
+                    classCount++;
+                    const option = document.createElement('option');
+                    option.value = className;
+                    option.textContent = className;
+                    classSelect.appendChild(option);
+                    console.log(`تمت إضافة الشعبة: ${className}`);
+                }
+            });
+            // إذا لم يتم العثور على شعب، يجب تعطيل القائمة
+            if (classCount === 0) {
+                classSelect.disabled = true;
+                console.log("لا توجد شعب لهذا الصف.");
+                showAlert('لا توجد شعب متاحة لهذا الصف.');
+            } else {
+                classSelect.disabled = false; // تفعيل اختيار الشعبة إذا كانت الشعب موجودة
             }
+        })
+        .catch((error) => {
+            console.error("حدث خطأ أثناء جلب الشعب:", error);
+            showAlert('حدث خطأ أثناء جلب الشعب. تحقق من الاتصال.');
+            classSelect.disabled = true; // تعطيل القائمة في حالة حدوث خطأ
         });
-        // إذا لم يتم العثور على شعب، يجب تعطيل القائمة
-        if (classCount === 0) {
-            classSelect.disabled = true;
-            console.log("لا توجد شعب لهذا الصف.");
-            showAlert('لا توجد شعب متاحة لهذا الصف.');
-        }
-    }).catch((error) => {
-        console.error("حدث خطأ أثناء جلب الشعب:", error);
-        showAlert('حدث خطأ أثناء جلب الشعب. تحقق من الاتصال.');
-        classSelect.disabled = true; // تعطيل القائمة في حالة حدوث خطأ
-    });
 });
 
 // عرض أسماء الطلاب عند اختيار الشعبة
 classSelect.addEventListener('change', () => {
     const selectedClass = classSelect.value;
+    studentsTableBody.innerHTML = ''; // تفريغ جدول الطلاب
+
     if (!selectedClass) {
-        studentsTableBody.innerHTML = '';
         console.log("لم يتم اختيار شعبة بعد.");
         return;
     }
@@ -95,7 +107,6 @@ classSelect.addEventListener('change', () => {
         if (doc.exists) {
             const students = doc.data().students;
             console.log(`تم جلب بيانات الطلاب: ${students}`);
-            studentsTableBody.innerHTML = '';
             students.forEach((student, index) => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
@@ -141,6 +152,11 @@ saveAttendanceButton.addEventListener('click', () => {
             });
         }
     });
+
+    if (attendanceData.length === 0) {
+        showAlert('يرجى تحديد حضور أو غياب للطلاب.');
+        return;
+    }
 
     // رفع البيانات إلى Firestore
     db.collection("attendance").add({
