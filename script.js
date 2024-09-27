@@ -1,15 +1,28 @@
-// تهيئة Firebase
-const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+// بيانات الطلاب والشعب مدمجة في الكود
+const studentsData = {
+    '5/1': ['أحمد بن علي', 'محمد بن سالم', 'سعيد بن خالد'],
+    '5/2': ['علي بن أحمد', 'خالد بن حسن', 'ياسر بن حمد'],
+    '5/3': ['سالم بن محمد', 'ناصر بن سعيد', 'سيف بن علي'],
+    '5/4': ['هاني بن عبدالله', 'ماجد بن سعيد', 'عبدالله بن ناصر'],
+    '6/1': ['خالد بن حمد', 'سالم بن حسن', 'محمد بن سيف'],
+    '6/2': ['ياسر بن سالم', 'سعيد بن علي', 'ناصر بن خالد'],
+    '6/3': ['أحمد بن سعيد', 'علي بن ماجد', 'عبدالله بن سالم'],
+    '6/4': ['محمد بن علي', 'عبدالله بن خالد', 'سعيد بن حسن'],
+    '6/5': ['حسن بن سالم', 'ماجد بن علي', 'خالد بن ياسر'],
+    '7/1': ['محمد بن حمد', 'علي بن سعيد', 'سالم بن ماجد'],
+    '7/2': ['عبدالله بن خالد', 'سعيد بن سالم', 'ماجد بن حمد'],
+    '7/3': ['خالد بن ياسر', 'حسن بن علي', 'سيف بن عبدالله'],
+    '7/4': ['ناصر بن محمد', 'سعيد بن حسن', 'عبدالله بن ماجد'],
+    '7/5': ['علي بن سالم', 'سالم بن حسن', 'خالد بن علي'],
+    '8/1': ['محمد بن علي', 'سعيد بن حمد', 'ياسر بن خالد'],
+    '8/2': ['عبدالله بن سالم', 'حسن بن علي', 'ماجد بن خالد'],
+    '8/3': ['علي بن ماجد', 'سيف بن عبدالله', 'خالد بن حسن'],
+    '8/4': ['ياسر بن سعيد', 'محمد بن سالم', 'عبدالله بن حمد'],
+    '9/1': ['ناصر بن علي', 'سعيد بن خالد', 'محمد بن عبدالله'],
+    '9/2': ['عبدالله بن محمد', 'خالد بن سعيد', 'سالم بن ماجد'],
+    '9/3': ['علي بن خالد', 'سعيد بن ماجد', 'محمد بن علي'],
+    '9/4': ['خالد بن سالم', 'حسن بن عبدالله', 'ماجد بن سعيد']
 };
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
 
 // الحصول على العناصر
 const gradeSelect = document.getElementById('grade-select');
@@ -54,7 +67,7 @@ classSelect.addEventListener('change', function() {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${student}</td>
-                <td><input type="radio" name="attendance-${index}" value="حضور"></td>
+                <td><input type="radio" name="attendance-${index}" value="حضور" checked></td>
                 <td><input type="radio" name="attendance-${index}" value="غياب"></td>
             `;
             studentsTableBody.appendChild(row);
@@ -67,7 +80,7 @@ classSelect.addEventListener('change', function() {
 });
 
 // حفظ بيانات الحضور في Firebase
-saveAttendanceButton.addEventListener('click', function() {
+saveAttendanceButton.addEventListener('click', async function() {
     const selectedGrade = gradeSelect.value;
     const selectedClass = classSelect.value;
     const selectedPeriod = periodSelect.value;
@@ -96,16 +109,25 @@ saveAttendanceButton.addEventListener('click', function() {
         return;
     }
 
-    db.collection("attendance").add({
+    // إضافة سجلات لتحديد البيانات قبل الحفظ
+    console.log("محاولة حفظ البيانات:", {
         grade: selectedGrade,
         class: selectedClass,
         period: selectedPeriod,
-        students: attendanceData,
-        timestamp: new Date()
-    }).then(() => {
+        students: attendanceData
+    });
+
+    try {
+        await addDoc(collection(db, "attendance"), {
+            grade: selectedGrade,
+            class: selectedClass,
+            period: selectedPeriod,
+            students: attendanceData,
+            timestamp: new Date()
+        });
         alert('تم حفظ الحضور بنجاح!');
-    }).catch((error) => {
+    } catch (error) {
         console.error("حدث خطأ أثناء حفظ البيانات:", error);
         alert('تعذر حفظ الحضور، تحقق من الاتصال بـ Firebase.');
-    });
+    }
 });
