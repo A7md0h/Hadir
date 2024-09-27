@@ -40,23 +40,30 @@ gradeSelect.addEventListener('change', () => {
     classSelect.innerHTML = '<option value="">-- اختر الشعبة --</option>';
     console.log(`تم اختيار الصف: ${selectedGrade}`);
 
-    // جلب جميع الشعب من Firestore
+    // تحويل الصف إلى الصيغة المطابقة في قاعدة البيانات
+    let gradeName = '';
+    switch(selectedGrade) {
+        case '5': gradeName = 'خامس'; break;
+        case '6': gradeName = 'سادس'; break;
+        case '7': gradeName = 'سابع'; break;
+        case '8': gradeName = 'ثامن'; break;
+        case '9': gradeName = 'تاسع'; break;
+        default: gradeName = ''; break;
+    }
+
+    // جلب جميع الشعب من Firestore بناءً على الصف المختار
     db.collection('classes').get().then((querySnapshot) => {
         let classCount = 0; // عداد للتحقق من وجود الشعب
         querySnapshot.forEach((doc) => {
             const className = doc.id;
-            // التحقق من أن الشعبة تتبع الصف المحدد
-            // إذا كانت الشعب مسماة مثل "خامس/1" تأكد من توافقها
-            const gradePart = className.split('/')[0]; // فصل جزء الصف من اسم الشعبة
-            if (gradePart === selectedGrade || className.startsWith(selectedGrade)) {
+            // التحقق من أن الشعبة تتطابق مع الصف المختار
+            if (className.startsWith(gradeName)) {
                 classCount++;
                 const option = document.createElement('option');
                 option.value = className;
                 option.textContent = className;
                 classSelect.appendChild(option);
                 console.log(`تمت إضافة الشعبة: ${className}`);
-            } else {
-                console.log(`الشعبة: ${className} لا تتطابق مع الصف: ${selectedGrade}`);
             }
         });
         // إذا لم يتم العثور على شعب، يجب تعطيل القائمة
