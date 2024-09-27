@@ -46,13 +46,17 @@ gradeSelect.addEventListener('change', () => {
         querySnapshot.forEach((doc) => {
             const className = doc.id;
             // التحقق من أن الشعبة تتبع الصف المحدد
-            if (className.startsWith(selectedGrade)) {
+            // إذا كانت الشعب مسماة مثل "خامس/1" تأكد من توافقها
+            const gradePart = className.split('/')[0]; // فصل جزء الصف من اسم الشعبة
+            if (gradePart === selectedGrade || className.startsWith(selectedGrade)) {
                 classCount++;
                 const option = document.createElement('option');
                 option.value = className;
                 option.textContent = className;
                 classSelect.appendChild(option);
                 console.log(`تمت إضافة الشعبة: ${className}`);
+            } else {
+                console.log(`الشعبة: ${className} لا تتطابق مع الصف: ${selectedGrade}`);
             }
         });
         // إذا لم يتم العثور على شعب، يجب تعطيل القائمة
