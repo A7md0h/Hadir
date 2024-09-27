@@ -8,6 +8,19 @@ const firebaseConfig = {
     appId: "1:531964326507:web:eae0e02d06941ad1f0372e"
 };
 
+// اختبار كتابة بيانات إلى Firestore
+db.collection('test').add({
+    testField: 'Hello, Firestore!',
+    timestamp: new Date()
+})
+.then((docRef) => {
+    console.log('تم كتابة البيانات بنجاح إلى Firestore! معرف الوثيقة:', docRef.id);
+})
+.catch((error) => {
+    console.error('حدث خطأ أثناء كتابة البيانات إلى Firestore:', error);
+});
+
+
 // تهيئة Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
