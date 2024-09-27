@@ -1,4 +1,4 @@
-// تهيئة Firebase
+// تهيئة Firebase - تأكد من استخدام التهيئة الصحيحة هنا
 const firebaseConfig = {
     apiKey: "AIzaSyBDwsgFvH_iffHcEb4RktjQXJi-s3cD830",
     authDomain: "hadir-fe761.firebaseapp.com",
@@ -10,158 +10,123 @@ const firebaseConfig = {
 
 // تهيئة Firebase
 firebase.initializeApp(firebaseConfig);
-
-// تهيئة Firestore
 const db = firebase.firestore();
 
-// بيانات الشعب لكل صف
-var classSections = {
-    '5': ['5/1', '5/2', '5/3', '5/4'],
-    '6': ['6/1', '6/2', '6/3', '6/4', '6/5'],
-    '7': ['7/1', '7/2', '7/3', '7/4', '7/5'],
-    '8': ['8/1', '8/2', '8/3', '8/4'],
-    '9': ['9/1', '9/2', '9/3', '9/4']
-};
+// الحصول على عناصر HTML
+const gradeSelect = document.getElementById('grade-select');
+const classSelect = document.getElementById('class-select');
+const periodSelect = document.getElementById('period-select');
+const studentsTableBody = document.getElementById('students-table').querySelector('tbody');
+const saveAttendanceButton = document.getElementById('save-attendance');
 
-// بيانات الطلاب لكل شعبة
-var studentsData = {
-    '5/1': ['أحمد بن علي', 'محمد بن سالم', 'سعيد بن خالد'],
-    '5/2': ['علي بن أحمد', 'خالد بن حسن', 'ياسر بن حمد'],
-    '5/3': ['سالم بن محمد', 'ناصر بن سعيد', 'سيف بن علي'],
-    '5/4': ['هاني بن عبدالله', 'ماجد بن سعيد', 'عبدالله بن ناصر'],
-    '6/1': ['خالد بن حمد', 'سالم بن حسن', 'محمد بن سيف'],
-    '6/2': ['ياسر بن سالم', 'سعيد بن علي', 'ناصر بن خالد'],
-    '6/3': ['أحمد بن سعيد', 'علي بن ماجد', 'عبدالله بن سالم'],
-    '6/4': ['محمد بن علي', 'عبدالله بن خالد', 'سعيد بن حسن'],
-    '6/5': ['حسن بن سالم', 'ماجد بن علي', 'خالد بن ياسر'],
-    '7/1': ['محمد بن حمد', 'علي بن سعيد', 'سالم بن ماجد'],
-    '7/2': ['عبدالله بن خالد', 'سعيد بن سالم', 'ماجد بن حمد'],
-    '7/3': ['خالد بن ياسر', 'حسن بن علي', 'سيف بن عبدالله'],
-    '7/4': ['ناصر بن محمد', 'سعيد بن حسن', 'عبدالله بن ماجد'],
-    '7/5': ['علي بن سالم', 'سالم بن حسن', 'خالد بن علي'],
-    '8/1': ['محمد بن علي', 'سعيد بن حمد', 'ياسر بن خالد'],
-    '8/2': ['عبدالله بن سالم', 'حسن بن علي', 'ماجد بن خالد'],
-    '8/3': ['علي بن ماجد', 'سيف بن عبدالله', 'خالد بن حسن'],
-    '8/4': ['ياسر بن سعيد', 'محمد بن سالم', 'عبدالله بن حمد'],
-    '9/1': ['ناصر بن علي', 'سعيد بن خالد', 'محمد بن عبدالله'],
-    '9/2': ['عبدالله بن محمد', 'خالد بن سعيد', 'سالم بن ماجد'],
-    '9/3': ['علي بن خالد', 'سعيد بن ماجد', 'محمد بن علي'],
-    '9/4': ['خالد بن سالم', 'حسن بن عبدالله', 'ماجد بن سعيد']
-};
-
-// التأكد من تحميل جميع العناصر بعد تحميل الصفحة
-document.addEventListener('DOMContentLoaded', function() {
-    // تحديد العناصر من الصفحة داخل DOMContentLoaded
-    var gradeSelect = document.getElementById('grade-select');
-    var classSelect = document.getElementById('class-select');
-    var periodSelect = document.getElementById('period-select');
-    var studentsTableBody = document.getElementById('students-table').querySelector('tbody');
-
-    // التأكد من وجود العناصر
-    if (!gradeSelect || !classSelect || !studentsTableBody) {
-        alert('هناك مشكلة في تحميل العناصر، تأكد من أن جميع العناصر موجودة وتستخدم الأسماء الصحيحة.');
+// تفعيل اختيار الشعبة بناءً على الصف المحدد
+gradeSelect.addEventListener('change', () => {
+    const selectedGrade = gradeSelect.value;
+    if (!selectedGrade) {
+        classSelect.disabled = true;
+        classSelect.innerHTML = '<option value="">-- اختر الشعبة --</option>';
         return;
     }
     
-    // التأكد من وجود خيارات في القوائم المنسدلة
-    gradeSelect.addEventListener('change', function() {
-        var selectedGrade = this.value;
-        classSelect.innerHTML = '<option value="">-- اختر الشعبة --</option>';
-        studentsTableBody.innerHTML = '';
+    // إفراغ القائمة وإعادة تهيئتها
+    classSelect.disabled = false;
+    classSelect.innerHTML = '<option value="">-- اختر الشعبة --</option>';
+    
+    // تحديد الشعب بناءً على الصف المختار
+    let classes = [];
+    switch (selectedGrade) {
+        case '5':
+            classes = ['خامس 1', 'خامس 2', 'خامس 3', 'خامس 4'];
+            break;
+        case '6':
+            classes = ['سادس 1', 'سادس 2', 'سادس 3', 'سادس 4', 'سادس 5'];
+            break;
+        case '7':
+            classes = ['سابع 1', 'سابع 2', 'سابع 3', 'سابع 4', 'سابع 5'];
+            break;
+        case '8':
+            classes = ['ثامن 1', 'ثامن 2', 'ثامن 3', 'ثامن 4'];
+            break;
+        case '9':
+            classes = ['تاسع 1', 'تاسع 2', 'تاسع 3', 'تاسع 4'];
+            break;
+    }
+    
+    // إضافة الخيارات للشعب في القائمة
+    classes.forEach((classItem) => {
+        const option = document.createElement('option');
+        option.value = classItem;
+        option.textContent = classItem;
+        classSelect.appendChild(option);
+    });
+});
 
-        if (selectedGrade) {
-            classSelect.disabled = false;
-            var sections = classSections[selectedGrade];
-            sections.forEach(function(section) {
-                var option = document.createElement('option');
-                option.value = section;
-                option.textContent = section;
-                classSelect.appendChild(option);
+// عرض أسماء الطلاب عند اختيار الشعبة
+classSelect.addEventListener('change', () => {
+    const selectedClass = classSelect.value;
+    if (!selectedClass) {
+        studentsTableBody.innerHTML = '';
+        return;
+    }
+    
+    // جلب أسماء الطلاب من Firestore
+    db.collection('classes').doc(selectedClass).get().then((doc) => {
+        if (doc.exists) {
+            const students = doc.data().students;
+            studentsTableBody.innerHTML = '';
+            students.forEach((student, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${student}</td>
+                    <td><input type="radio" name="attendance-${index}" value="حضور" required></td>
+                    <td><input type="radio" name="attendance-${index}" value="غياب" required></td>
+                `;
+                studentsTableBody.appendChild(row);
             });
         } else {
-            classSelect.disabled = true;
+            studentsTableBody.innerHTML = '<tr><td colspan="3">لا توجد بيانات للطلاب في هذه الشعبة.</td></tr>';
         }
+    }).catch((error) => {
+        console.error("حدث خطأ أثناء جلب البيانات:", error);
     });
+});
 
-    // عند اختيار الشعبة
-    classSelect.addEventListener('change', function() {
-        var selectedClass = this.value;
-        loadStudents(selectedClass);
-    });
+// حفظ الحضور والغياب
+saveAttendanceButton.addEventListener('click', () => {
+    const selectedGrade = gradeSelect.value;
+    const selectedClass = classSelect.value;
+    const selectedPeriod = periodSelect.value;
 
-    // تحميل الطلاب بناءً على الشعبة المختارة
-    function loadStudents(classId) {
-        studentsTableBody.innerHTML = ''; // مسح الجدول
-
-        var students = studentsData[classId];
-        if (!students) {
-            alert('لا توجد بيانات لهذه الشعبة.');
-            return;
-        }
-
-        students.forEach(function(studentName, index) {
-            var row = document.createElement('tr');
-            var nameCell = document.createElement('td');
-            nameCell.textContent = studentName;
-
-            var presentCell = document.createElement('td');
-            var presentInput = document.createElement('input');
-            presentInput.type = 'radio';
-            presentInput.name = 'attendance-' + index;
-            presentInput.value = 'present';
-            presentInput.checked = true; // بشكل افتراضي حاضر
-            presentCell.appendChild(presentInput);
-
-            var absentCell = document.createElement('td');
-            var absentInput = document.createElement('input');
-            absentInput.type = 'radio';
-            absentInput.name = 'attendance-' + index;
-            absentInput.value = 'absent';
-            absentCell.appendChild(absentInput);
-
-            row.appendChild(nameCell);
-            row.appendChild(presentCell);
-            row.appendChild(absentCell);
-            studentsTableBody.appendChild(row);
-        });
+    if (!selectedGrade || !selectedClass || !selectedPeriod) {
+        alert('يرجى اختيار الصف والشعبة والحصة.');
+        return;
     }
 
-    // الدالة لحفظ الحضور
-    document.getElementById('save-attendance').addEventListener('click', async function() {
-        var selectedGrade = gradeSelect.value;
-        var selectedClass = classSelect.value;
-        var selectedPeriod = periodSelect.value;
+    const rows = studentsTableBody.querySelectorAll('tr');
+    const attendanceData = [];
 
-        if (!selectedGrade || !selectedClass || !selectedPeriod) {
-            alert('يرجى اختيار الصف والشعبة والحصة.');
-            return;
-        }
-
-        var rows = studentsTableBody.querySelectorAll('tr');
-        var attendanceData = [];
-
-        rows.forEach(function(row, index) {
-            var studentName = row.querySelector('td').textContent;
-            var attendance = row.querySelector('input[name="attendance-' + index + '"]:checked').value;
+    rows.forEach((row, index) => {
+        const studentName = row.querySelector('td').textContent;
+        const attendance = row.querySelector(`input[name="attendance-${index}"]:checked`);
+        if (attendance) {
             attendanceData.push({
                 name: studentName,
-                attendance: attendance
+                attendance: attendance.value
             });
-        });
-
-        // حفظ البيانات في Firestore
-        try {
-            await db.collection("attendance").add({
-                grade: selectedGrade,
-                class: selectedClass,
-                period: selectedPeriod,
-                students: attendanceData,
-                timestamp: new Date()
-            });
-            alert('تم حفظ الحضور بنجاح في Firestore!');
-        } catch (error) {
-            console.error("خطأ أثناء حفظ البيانات: ", error);
-            alert('تعذر حفظ الحضور، تحقق من الاتصال بـ Firestore.');
         }
+    });
+
+    // رفع البيانات إلى Firestore
+    db.collection("attendance").add({
+        grade: selectedGrade,
+        class: selectedClass,
+        period: selectedPeriod,
+        students: attendanceData,
+        timestamp: new Date()
+    }).then(() => {
+        alert('تم حفظ الحضور بنجاح!');
+    }).catch((error) => {
+        console.error("حدث خطأ أثناء حفظ البيانات:", error);
+        alert('تعذر حفظ الحضور، تحقق من الاتصال بـ Firestore.');
     });
 });
