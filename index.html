@@ -30,6 +30,22 @@
         // سجلات للتأكد من التهيئة
         console.log("Firebase Initialized", app);
         console.log("Firestore Initialized", db);
+
+        // اختبار حفظ بيانات بسيطة
+        async function testFirestoreConnection() {
+            try {
+                const testDocRef = await addDoc(collection(db, "testCollection"), {
+                    testField: "Test data",
+                    timestamp: new Date()
+                });
+                console.log("تم حفظ بيانات الاختبار بنجاح!", testDocRef.id);
+            } catch (error) {
+                console.error("حدث خطأ أثناء حفظ بيانات الاختبار:", error);
+            }
+        }
+
+        // استدعاء اختبار الحفظ
+        testFirestoreConnection();
     </script>
 </head>
 <body>
