@@ -27,11 +27,11 @@ gradeSelect.addEventListener('change', () => {
         classSelect.innerHTML = '<option value="">-- اختر الشعبة --</option>';
         return;
     }
-    
+
     // إفراغ القائمة وإعادة تهيئتها
     classSelect.disabled = false;
     classSelect.innerHTML = '<option value="">-- اختر الشعبة --</option>';
-    
+
     // تحديد الشعب بناءً على الصف المختار
     let classes = [];
     switch (selectedGrade) {
@@ -50,8 +50,11 @@ gradeSelect.addEventListener('change', () => {
         case '9':
             classes = ['تاسع 1', 'تاسع 2', 'تاسع 3', 'تاسع 4'];
             break;
+        default:
+            classes = []; // إذا لم يتم اختيار صف صحيح
+            break;
     }
-    
+
     // إضافة الخيارات للشعب في القائمة
     classes.forEach((classItem) => {
         const option = document.createElement('option');
@@ -68,7 +71,7 @@ classSelect.addEventListener('change', () => {
         studentsTableBody.innerHTML = '';
         return;
     }
-    
+
     // جلب أسماء الطلاب من Firestore
     db.collection('classes').doc(selectedClass).get().then((doc) => {
         if (doc.exists) {
