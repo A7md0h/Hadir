@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الحضور والغياب</title>
+    <!-- تحميل مكتبات Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+    <!-- تحميل ملف CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- خط جوجل (Cairo) لتحسين الخط العربي -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600&display=swap">
+</head>
+<body>
+    <!-- رأس الصفحة: شعار المدرسة واسم المدرسة -->
+    <header class="header">
+        <img src="logo.png" alt="شعار المديرية" class="school-logo">
+        <h1>مدرسة أبو القاسم للتعليم الأساسي</h1>
+    </header>
+
+    <!-- حاوية الحضور -->
+    <div class="attendance-container">
+        <h2>تسجيل الحضور والغياب</h2>
+
+        <!-- اختيار الصف -->
+        <div class="selector-group">
+            <label for="grade-select">اختر الصف:</label>
+            <select id="grade-select">
+                <option value="">-- اختر الصف --</option>
+                <option value="5">الصف الخامس</option>
+                <option value="6">الصف السادس</option>
+                <option value="7">الصف السابع</option>
+                <option value="8">الصف الثامن</option>
+                <option value="9">الصف التاسع</option>
+            </select>
+        </div>
+
+        <!-- اختيار الشعبة -->
+        <div class="selector-group">
+            <label for="class-select">اختر الشعبة:</label>
+            <select id="class-select" disabled>
+                <option value="">-- اختر الشعبة --</option>
+            </select>
+        </div>
+
+        <!-- اختيار الحصة -->
+        <div class="selector-group">
+            <label for="period-select">اختر الحصة:</label>
+            <select id="period-select">
+                <option value="">-- اختر الحصة --</option>
+                <option value="1">الحصة الأولى</option>
+                <option value="2">الحصة الثانية</option>
+                <option value="3">الحصة الثالثة</option>
+                <option value="4">الحصة الرابعة</option>
+                <option value="5">الحصة الخامسة</option>
+                <option value="6">الحصة السادسة</option>
+                <option value="7">الحصة السابعة</option>
+                <option value="8">الحصة الثامنة</option>
+            </select>
+        </div>
+
+        <!-- جدول الطلاب -->
+        <div class="attendance-table">
+            <table id="students-table">
+                <thead>
+                    <tr>
+                        <th>اسم الطالب</th>
+                        <th>حضور</th>
+                        <th>غياب</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- سيتم إضافة الصفوف هنا بناءً على الصف والشعبة المختارة -->
+                </tbody>
+            </table>
+        </div>
+
+        <button id="save-attendance" class="btn-save">حفظ الحضور</button>
+    </div>
+
+    <!-- تصميم الأستاذ أحمد الضامري -->
+    <footer>
+        <p>تصميم الأستاذ أحمد الضامري</p>
+    </footer>
+
+    <!-- تحميل ملف JavaScript بعد تحميل الصفحة -->
+    <script src="script.js"></script>
+</body>
+</html>
