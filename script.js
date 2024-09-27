@@ -1,4 +1,4 @@
-// تهيئة Firebase - تأكد من استخدام التهيئة الصحيحة هنا
+// تهيئة Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyBDwsgFvH_iffHcEb4RktjQXJi-s3cD830",
     authDomain: "hadir-fe761.firebaseapp.com",
@@ -32,35 +32,20 @@ gradeSelect.addEventListener('change', () => {
     classSelect.disabled = false;
     classSelect.innerHTML = '<option value="">-- اختر الشعبة --</option>';
 
-    // تحديد الشعب بناءً على الصف المختار
-    let classes = [];
-    switch (selectedGrade) {
-        case 'الصف الخامس':
-            classes = ['خامس 1', 'خامس 2', 'خامس 3', 'خامس 4'];
-            break;
-        case 'الصف السادس':
-            classes = ['سادس 1', 'سادس 2', 'سادس 3', 'سادس 4', 'سادس 5'];
-            break;
-        case 'الصف السابع':
-            classes = ['سابع 1', 'سابع 2', 'سابع 3', 'سابع 4', 'سابع 5'];
-            break;
-        case 'الصف الثامن':
-            classes = ['ثامن 1', 'ثامن 2', 'ثامن 3', 'ثامن 4'];
-            break;
-        case '9الصف التاسع':
-            classes = ['تاسع 1', 'تاسع 2', 'تاسع 3', 'تاسع 4'];
-            break;
-        default:
-            classes = []; // إذا لم يتم اختيار صف صحيح
-            break;
-    }
-
-    // إضافة الخيارات للشعب في القائمة
-    classes.forEach((classItem) => {
-        const option = document.createElement('option');
-        option.value = classItem;
-        option.textContent = classItem;
-        classSelect.appendChild(option);
+    // جلب جميع الشعب من Firestore
+    db.collection('classes').get().then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+            const className = doc.id;
+            // التحقق من أن الشعبة تتبع الصف المحدد
+            if (className.startsWith(selectedGrade)) {
+                const option = document.createElement('option');
+                option.value = className;
+                option.textContent = className;
+                classSelect.appendChild(option);
+            }
+        });
+    }).catch((error) => {
+        console.error("حدث خطأ أثناء جلب الشعب:", error);
     });
 });
 
