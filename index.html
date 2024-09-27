@@ -6,6 +6,26 @@
     <title>تسجيل الحضور والغياب</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="attendance-styles.css">
+    <!-- تحميل مكتبات Firebase -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBDwsgFvH_iffHcEb4RktjQXJi-s3cD830",
+            authDomain: "hadir-fe761.firebaseapp.com",
+            projectId: "hadir-fe761",
+            storageBucket: "hadir-fe761.appspot.com",
+            messagingSenderId: "531964326507",
+            appId: "1:531964326507:web:eae0e02d06941ad1f0372e"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+    </script>
 </head>
 <body>
     <header class="header">
@@ -159,7 +179,7 @@
         });
 
         // حفظ بيانات الحضور في Firebase
-        saveAttendanceButton.addEventListener('click', function() {
+        saveAttendanceButton.addEventListener('click', async function() {
             const selectedGrade = gradeSelect.value;
             const selectedClass = classSelect.value;
             const selectedPeriod = periodSelect.value;
@@ -188,18 +208,19 @@
                 return;
             }
 
-            db.collection("attendance").add({
-                grade: selectedGrade,
-                class: selectedClass,
-                period: selectedPeriod,
-                students: attendanceData,
-                timestamp: new Date()
-            }).then(() => {
+            try {
+                await addDoc(collection(db, "attendance"), {
+                    grade: selectedGrade,
+                    class: selectedClass,
+                    period: selectedPeriod,
+                    students: attendanceData,
+                    timestamp: new Date()
+                });
                 alert('تم حفظ الحضور بنجاح!');
-            }).catch((error) => {
+            } catch (error) {
                 console.error("حدث خطأ أثناء حفظ البيانات:", error);
                 alert('تعذر حفظ الحضور، تحقق من الاتصال بـ Firebase.');
-            });
+            }
         });
     </script>
 </body>
