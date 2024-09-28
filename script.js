@@ -10,17 +10,17 @@
     <!-- تحميل مكتبات Firebase -->
     <script type="module">
         // Import the functions you need from the SDKs you need
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
-        // إعدادات Firebase
+        // إعدادات Firebase - تأكد من صحة البيانات
         const firebaseConfig = {
-            apiKey: "AIzaSyCwuW8ROBIq7wQm7Z4VQ1gYZ3RjZMb7gdU",
-            authDomain: "hadir-2.firebaseapp.com",
-            projectId: "hadir-2",
-            storageBucket: "hadir-2.appspot.com",
-            messagingSenderId: "821034172894",
-            appId: "1:821034172894:web:a0138080d6c563af8b1d4f"
+            apiKey: "AIzaSyDC1c9UIHn5d1SaWg1VeJwaWsRYE3aCCKU",
+            authDomain: "hadir-e1706.firebaseapp.com",
+            projectId: "hadir-e1706",
+            storageBucket: "hadir-e1706.appspot.com",
+            messagingSenderId: "216498723412",
+            appId: "1:216498723412:web:b83c70cd8500b3fba5abc1"
         };
 
         // Initialize Firebase
