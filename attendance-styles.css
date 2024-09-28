@@ -1,101 +1,135 @@
-/* أنماط الأسلوب لتسجيل الحضور والغياب */
+/* إعدادات الخطوط الأساسية */
 body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f9f9f9;
+    font-family: 'Cairo', sans-serif; /* استخدام خط عربي أنيق */
+    background-color: #f4f7f9; /* لون خلفية هادئ */
     margin: 0;
     padding: 0;
+    text-align: center;
+    direction: rtl; /* محاذاة النصوص إلى اليمين */
 }
 
+/* تنسيق الرأس */
 .header {
-    background-color: #4CAF50;
-    color: white;
-    text-align: center;
+    background-color: #1e3c72; /* لون خلفية الرأس */
     padding: 20px;
+    color: #ffffff; /* لون النص */
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* إضافة ظل خفيف */
 }
 
 .school-logo {
-    width: 100px;
+    width: 80px; /* حجم الشعار */
     height: auto;
+    margin-bottom: 10px; /* مسافة تحت الشعار */
 }
 
+.header h1 {
+    margin: 0;
+    font-size: 28px; /* حجم الخط */
+    font-weight: 600; /* ثقل الخط */
+}
+
+/* تنسيق حاوية الحضور */
 .attendance-container {
-    max-width: 800px;
+    background-color: #ffffff;
+    width: 90%;
+    max-width: 900px;
     margin: 20px auto;
-    background-color: white;
     padding: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
+    border-radius: 10px; /* زوايا مستديرة */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* ظل خفيف للحاوية */
 }
 
-h2 {
-    text-align: center;
+.attendance-container h2 {
+    font-size: 26px;
     color: #333;
+    margin-bottom: 20px;
 }
 
+/* تنسيق مجموعات الاختيار */
 .selector-group {
     margin-bottom: 20px;
-    text-align: center;
 }
 
 .selector-group label {
-    font-weight: bold;
+    font-size: 20px; /* حجم الخط */
+    font-weight: 600;
+    margin-bottom: 5px;
+    display: block;
 }
 
 .selector-group select {
+    font-size: 18px;
     padding: 10px;
-    width: 200px;
-    margin-top: 10px;
-    font-size: 16px;
-}
-
-.attendance-table {
     width: 100%;
-    margin-top: 20px;
-    border-collapse: collapse;
+    max-width: 300px;
+    border-radius: 5px; /* زوايا مستديرة */
+    border: 1px solid #ddd; /* حدود خفيفة */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* ظل خفيف */
+    outline: none;
+    transition: border 0.3s ease, box-shadow 0.3s ease; /* إضافة تأثير تفاعل */
+    margin-top: 5px;
 }
 
-.attendance-table th,
-.attendance-table td {
-    border: 1px solid #ddd;
-    padding: 12px;
+.selector-group select:focus {
+    border-color: #1e3c72; /* تغيير لون الحدود عند التركيز */
+    box-shadow: 0 0 8px rgba(30, 60, 114, 0.4); /* ظل مميز عند التركيز */
+}
+
+/* تنسيق الجدول */
+.attendance-table {
+    margin-top: 20px;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 18px; /* حجم الخط */
+}
+
+table th, table td {
+    border: 1px solid #dddddd;
+    padding: 15px;
     text-align: center;
 }
 
-.attendance-table th {
-    background-color: #f2f2f2;
-    font-weight: bold;
+table th {
+    background-color: #1e3c72; /* لون الخلفية */
+    color: #ffffff; /* لون النص */
+    font-weight: 600; /* ثقل الخط */
 }
 
-.attendance-table td input[type="radio"] {
-    transform: scale(1.2);
-    margin: 5px;
+table td {
+    background-color: #f9f9f9;
 }
 
+/* تنسيق زر الحفظ */
 .btn-save {
-    display: block;
-    width: 100%;
-    padding: 15px;
     background-color: #4CAF50;
-    color: white;
+    color: #ffffff;
     border: none;
+    padding: 15px 30px;
     font-size: 18px;
+    border-radius: 5px; /* زوايا مستديرة */
     cursor: pointer;
-    margin-top: 20px;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.1s ease; /* إضافة تأثير التفاعل */
 }
 
-.btn-save:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
-
-.btn-save:hover:not(:disabled) {
+.btn-save:hover {
     background-color: #45a049;
 }
 
+.btn-save:active {
+    transform: scale(0.98); /* تأثير الضغط عند النقر */
+}
+
+/* تنسيق الفوتر */
 footer {
-    text-align: center;
-    margin-top: 20px;
-    color: #888;
+    background-color: #f4f4f4;
+    padding: 10px;
+    font-size: 16px;
+    color: #666;
+    margin-top: 30px;
 }
