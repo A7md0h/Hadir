@@ -6,13 +6,12 @@
     <title>تسجيل الحضور والغياب</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="attendance-styles.css">
-    
+
     <!-- تحميل مكتبات Firebase -->
     <script type="module">
-        // Import the functions you need from the SDKs you need
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
-
+        // استيراد مكتبات Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
         // إعدادات Firebase - تأكد من صحة البيانات
         const firebaseConfig = {
@@ -24,15 +23,11 @@
             appId: "1:216498723412:web:b83c70cd8500b3fba5abc1"
         };
 
-        // Initialize Firebase
+        // تهيئة Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app); // تهيئة Firestore
 
-        // سجلات للتأكد من التهيئة
-        console.log("Firebase Initialized", app);
-        console.log("Firestore Initialized", db);
-
-        // اختبار حفظ بيانات بسيطة
+        // اختبار الاتصال بقاعدة البيانات
         async function testFirestoreConnection() {
             try {
                 const testDocRef = await addDoc(collection(db, "testCollection"), {
@@ -45,7 +40,7 @@
             }
         }
 
-        // استدعاء اختبار الحفظ
+        // استدعاء اختبار الحفظ عند تحميل الصفحة
         testFirestoreConnection();
     </script>
 </head>
