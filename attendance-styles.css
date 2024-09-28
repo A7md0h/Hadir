@@ -1,174 +1,135 @@
-// استيراد مكتبات Firebase
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
-
-// إعدادات Firebase - تأكد من صحة البيانات
-const firebaseConfig = {
-    apiKey: "AIzaSyDC1c9UIHn5d1SaWg1VeJwaWsRYE3aCCKU",
-    authDomain: "hadir-e1706.firebaseapp.com",
-    projectId: "hadir-e1706",
-    storageBucket: "hadir-e1706.appspot.com",
-    messagingSenderId: "216498723412",
-    appId: "1:216498723412:web:b83c70cd8500b3fba5abc1"
-};
-
-// تهيئة Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app); // تهيئة Firestore
-
-// التأكد من التهيئة
-console.log("Firebase Initialized", app);
-console.log("Firestore Initialized", db);
-
-// اختبار حفظ بيانات بسيطة
-async function testFirestoreConnection() {
-    try {
-        const testDocRef = await addDoc(collection(db, "testCollection"), {
-            testField: "Test data",
-            timestamp: new Date()
-        });
-        console.log("تم حفظ بيانات الاختبار بنجاح!", testDocRef.id);
-    } catch (error) {
-        console.error("حدث خطأ أثناء حفظ بيانات الاختبار:", error);
-    }
+/* إعدادات الخطوط الأساسية */
+body {
+    font-family: 'Cairo', sans-serif; /* استخدام خط عربي أنيق */
+    background-color: #f4f7f9; /* لون خلفية هادئ */
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    direction: rtl; /* محاذاة النصوص إلى اليمين */
 }
 
-// استدعاء اختبار الحفظ عند تحميل الصفحة
-testFirestoreConnection();
+/* تنسيق الرأس */
+.header {
+    background-color: #1e3c72; /* لون خلفية الرأس */
+    padding: 20px;
+    color: #ffffff; /* لون النص */
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* إضافة ظل خفيف */
+}
 
-// بيانات الطلاب والشعب مدمجة في الكود
-const studentsData = {
-    '5/1': ['أحمد بن علي', 'محمد بن سالم', 'سعيد بن خالد'],
-    '5/2': ['علي بن أحمد', 'خالد بن حسن', 'ياسر بن حمد'],
-    '5/3': ['سالم بن محمد', 'ناصر بن سعيد', 'سيف بن علي'],
-    '5/4': ['هاني بن عبدالله', 'ماجد بن سعيد', 'عبدالله بن ناصر'],
-    '6/1': ['خالد بن حمد', 'سالم بن حسن', 'محمد بن سيف'],
-    '6/2': ['ياسر بن سالم', 'سعيد بن علي', 'ناصر بن خالد'],
-    '6/3': ['أحمد بن سعيد', 'علي بن ماجد', 'عبدالله بن سالم'],
-    '6/4': ['محمد بن علي', 'عبدالله بن خالد', 'سعيد بن حسن'],
-    '6/5': ['حسن بن سالم', 'ماجد بن علي', 'خالد بن ياسر'],
-    '7/1': ['محمد بن حمد', 'علي بن سعيد', 'سالم بن ماجد'],
-    '7/2': ['عبدالله بن خالد', 'سعيد بن سالم', 'ماجد بن حمد'],
-    '7/3': ['خالد بن ياسر', 'حسن بن علي', 'سيف بن عبدالله'],
-    '7/4': ['ناصر بن محمد', 'سعيد بن حسن', 'عبدالله بن ماجد'],
-    '7/5': ['علي بن سالم', 'سالم بن حسن', 'خالد بن علي'],
-    '8/1': ['محمد بن علي', 'سعيد بن حمد', 'ياسر بن خالد'],
-    '8/2': ['عبدالله بن سالم', 'حسن بن علي', 'ماجد بن خالد'],
-    '8/3': ['علي بن ماجد', 'سيف بن عبدالله', 'خالد بن حسن'],
-    '8/4': ['ياسر بن سعيد', 'محمد بن سالم', 'عبدالله بن حمد'],
-    '9/1': ['ناصر بن علي', 'سعيد بن خالد', 'محمد بن عبدالله'],
-    '9/2': ['عبدالله بن محمد', 'خالد بن سعيد', 'سالم بن ماجد'],
-    '9/3': ['علي بن خالد', 'سعيد بن ماجد', 'محمد بن علي'],
-    '9/4': ['خالد بن سالم', 'حسن بن عبدالله', 'ماجد بن سعيد']
-};
+.school-logo {
+    width: 80px; /* حجم الشعار */
+    height: auto;
+    margin-bottom: 10px; /* مسافة تحت الشعار */
+}
 
-// الحصول على العناصر
-window.addEventListener('DOMContentLoaded', () => {
-    const gradeSelect = document.getElementById('grade-select');
-    const classSelect = document.getElementById('class-select');
-    const periodSelect = document.getElementById('period-select');
-    const studentsTableBody = document.getElementById('students-table').querySelector('tbody');
-    const saveAttendanceButton = document.getElementById('save-attendance');
+.header h1 {
+    margin: 0;
+    font-size: 28px; /* حجم الخط */
+    font-weight: 600; /* ثقل الخط */
+}
 
-    // عند تغيير الصف، تحديث الشُعب
-    gradeSelect.addEventListener('change', function() {
-        const selectedGrade = gradeSelect.value;
-        classSelect.innerHTML = '<option value="">-- اختر الشعبة --</option>';
-        studentsTableBody.innerHTML = ''; // مسح الجدول
-        saveAttendanceButton.disabled = true; // تعطيل زر الحفظ حتى يتم اختيار شعبة
+/* تنسيق حاوية الحضور */
+.attendance-container {
+    background-color: #ffffff;
+    width: 90%;
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 10px; /* زوايا مستديرة */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* ظل خفيف للحاوية */
+}
 
-        if (selectedGrade) {
-            const classKeys = Object.keys(studentsData).filter(classKey => classKey.startsWith(selectedGrade + '/'));
-            
-            if (classKeys.length > 0) {
-                classKeys.forEach(classKey => {
-                    const option = document.createElement('option');
-                    option.value = classKey;
-                    option.textContent = classKey;
-                    classSelect.appendChild(option);
-                });
-                classSelect.disabled = false; // تفعيل اختيار الشعبة
-            } else {
-                alert('لا توجد شعب متاحة لهذا الصف.');
-            }
-        } else {
-            classSelect.disabled = true; // تعطيل اختيار الشعبة إذا لم يتم اختيار الصف
-        }
-    });
+.attendance-container h2 {
+    font-size: 26px;
+    color: #333;
+    margin-bottom: 20px;
+}
 
-    // عند تغيير الشعبة، عرض أسماء الطلاب
-    classSelect.addEventListener('change', function() {
-        const selectedClass = classSelect.value;
-        studentsTableBody.innerHTML = ''; // مسح الجدول
+/* تنسيق مجموعات الاختيار */
+.selector-group {
+    margin-bottom: 20px;
+}
 
-        if (selectedClass && studentsData[selectedClass]) {
-            studentsData[selectedClass].forEach((student, index) => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${student}</td>
-                    <td><input type="radio" name="attendance-${index}" value="حضور" checked></td>
-                    <td><input type="radio" name="attendance-${index}" value="غياب"></td>
-                `;
-                studentsTableBody.appendChild(row);
-            });
-            saveAttendanceButton.disabled = false; // تفعيل زر الحفظ عند وجود طلاب
-        } else {
-            studentsTableBody.innerHTML = '<tr><td colspan="3">لا توجد بيانات للطلاب في هذه الشعبة.</td></tr>';
-            saveAttendanceButton.disabled = true; // تعطيل زر الحفظ إذا لم توجد بيانات للطلاب
-        }
-    });
+.selector-group label {
+    font-size: 20px; /* حجم الخط */
+    font-weight: 600;
+    margin-bottom: 5px;
+    display: block;
+}
 
-    // حفظ بيانات الحضور في Firebase
-    saveAttendanceButton.addEventListener('click', async function() {
-        const selectedGrade = gradeSelect.value;
-        const selectedClass = classSelect.value;
-        const selectedPeriod = periodSelect.value;
+.selector-group select {
+    font-size: 18px;
+    padding: 10px;
+    width: 100%;
+    max-width: 300px;
+    border-radius: 5px; /* زوايا مستديرة */
+    border: 1px solid #ddd; /* حدود خفيفة */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* ظل خفيف */
+    outline: none;
+    transition: border 0.3s ease, box-shadow 0.3s ease; /* إضافة تأثير تفاعل */
+    margin-top: 5px;
+}
 
-        if (!selectedGrade || !selectedClass || !selectedPeriod) {
-            alert('يرجى اختيار الصف والشعبة والحصة.');
-            return;
-        }
+.selector-group select:focus {
+    border-color: #1e3c72; /* تغيير لون الحدود عند التركيز */
+    box-shadow: 0 0 8px rgba(30, 60, 114, 0.4); /* ظل مميز عند التركيز */
+}
 
-        const attendanceData = [];
-        const rows = studentsTableBody.querySelectorAll('tr');
+/* تنسيق الجدول */
+.attendance-table {
+    margin-top: 20px;
+    overflow-x: auto;
+}
 
-        rows.forEach((row, index) => {
-            const studentName = row.querySelector('td').textContent;
-            const attendance = row.querySelector(`input[name="attendance-${index}"]:checked`);
-            if (attendance) {
-                attendanceData.push({
-                    name: studentName,
-                    attendance: attendance.value
-                });
-            }
-        });
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 18px; /* حجم الخط */
+}
 
-        if (attendanceData.length === 0) {
-            alert('يرجى تحديد حضور أو غياب للطلاب.');
-            return;
-        }
+table th, table td {
+    border: 1px solid #dddddd;
+    padding: 15px;
+    text-align: center;
+}
 
-        // إضافة سجلات لتحديد البيانات قبل الحفظ
-        console.log("محاولة حفظ البيانات:", {
-            grade: selectedGrade,
-            class: selectedClass,
-            period: selectedPeriod,
-            students: attendanceData
-        });
+table th {
+    background-color: #1e3c72; /* لون الخلفية */
+    color: #ffffff; /* لون النص */
+    font-weight: 600; /* ثقل الخط */
+}
 
-        try {
-            // إضافة سجل الحضور إلى مجموعة "attendance"
-            await addDoc(collection(db, "attendance"), {
-                grade: selectedGrade,
-                class: selectedClass,
-                period: selectedPeriod,
-                students: attendanceData,
-                timestamp: new Date()
-            });
-            alert('تم حفظ الحضور بنجاح!');
-        } catch (error) {
-            console.error("حدث خطأ أثناء حفظ البيانات:", error);
-            alert('تعذر حفظ الحضور، تحقق من الاتصال بـ Firebase.');
-        }
-    });
-});
+table td {
+    background-color: #f9f9f9;
+}
+
+/* تنسيق زر الحفظ */
+.btn-save {
+    background-color: #4CAF50;
+    color: #ffffff;
+    border: none;
+    padding: 15px 30px;
+    font-size: 18px;
+    border-radius: 5px; /* زوايا مستديرة */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease; /* إضافة تأثير التفاعل */
+}
+
+.btn-save:hover {
+    background-color: #45a049;
+}
+
+.btn-save:active {
+    transform: scale(0.98); /* تأثير الضغط عند النقر */
+}
+
+/* تنسيق الفوتر */
+footer {
+    background-color: #f4f4f4;
+    padding: 10px;
+    font-size: 16px;
+    color: #666;
+    margin-top: 30px;
+}
